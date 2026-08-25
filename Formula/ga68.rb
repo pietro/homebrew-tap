@@ -24,6 +24,12 @@ class Ga68 < Formula
     regex(%r{href=["']?gcc[._-]v?(\d+(?:\.\d+)+)(?:/?["' >]|\.t)}i)
   end
 
+  bottle do
+    root_url "https://github.com/pietro/homebrew-tap/releases/download/ga68-16.2.0"
+    sha256 arm64_tahoe:  "f504a6cbb5f774d905666a073b77427fddd31443c64e003e69a0fd8967f7f700"
+    sha256 x86_64_linux: "1bb02bc8283fc8e0582b348054af87a053d957e85743160ec6638d1f2c95d778"
+  end
+
   # The bottles are built on systems with the CLT installed, and do not work
   # out of the box on Xcode-only systems due to an incorrect sysroot.
   pour_bottle? only_if: :clt_installed
