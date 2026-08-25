@@ -1,5 +1,6 @@
-class Gcc < Formula
-  desc "GNU compiler collection"
+# Based on https://github.com/pietro/homebrew-core/blob/main/Formula/g/gcc.rb
+class Ga68 < Formula
+  desc "GNU Algol 68 compiler"
   homepage "https://gcc.gnu.org/"
   license "GPL-3.0-or-later" => { with: "GCC-exception-3.1" }
   head "https://gcc.gnu.org/git/gcc.git", branch: "master"
