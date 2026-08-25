@@ -1,16 +1,16 @@
-# Pietro Tap
+# GNU Algol 68 Homebrew Tap
 
 ## How do I install these formulae?
 
-`brew install pietro/tap/<formula>`
+`brew install pietro/tap/ga68`
 
-Or `brew tap pietro/tap` and then `brew install <formula>`.
+Or `brew tap pietro/tap` and then `brew install ga68`.
 
 Or, in a `brew bundle` `Brewfile`:
 
 ```ruby
 tap "pietro/tap"
-brew "<formula>"
+brew "ga68"
 ```
 
 ## Documentation
