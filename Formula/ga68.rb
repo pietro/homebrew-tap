@@ -2,8 +2,6 @@ class Gcc < Formula
   desc "GNU compiler collection"
   homepage "https://gcc.gnu.org/"
   license "GPL-3.0-or-later" => { with: "GCC-exception-3.1" }
-  revision 1
-  compatibility_version 2
   head "https://gcc.gnu.org/git/gcc.git", branch: "master"
 
   stable do
@@ -132,21 +130,19 @@ class Gcc < Formula
     # We need to create `lib/gcc/xy` as a directory and not a symlink to avoid `brew link` conflicts.
     (lib/"gcc"/version_suffix).install_symlink (lib/"gcc/current").children
 
-    # Delete man pages and info files.
+    # Delete man pages and info files to avoid conflict with other GCC formulas.
     rm_r(man7)
-    # Even when we disable building info pages some are still installed.
     rm_r(info)
   end
 
   post_install_steps do
     configure_gcc_runtime
-    # Remove gcc/g++ drivers to avoid conflict with other gcc formulas.
-    Dir.children(bin).each do |filename|
-      path = File.join(bin, filename)
-      next unless File.file?(path)
-      next if filename.include?("ga68")
-      File.delete(path)
-    end
+
+    # Remove gcc/g++ drivers to avoid conflict with other GCC formulas.
+    remove("*gcc*", base: :bin)
+    remove("*g++*", base: :bin)
+    remove("*gcov*", base: :bin)
+    remove("*lto*", base: :bin)
   end
 
   test do
