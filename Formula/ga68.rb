@@ -30,7 +30,7 @@ class Ga68 < Formula
     sha256 x86_64_linux: "1bb02bc8283fc8e0582b348054af87a053d957e85743160ec6638d1f2c95d778"
   end
 
-  conflicts_with "gcc"
+  conflicts_with "gcc",
   because: "this formula provides the same frontends as GCC, with the addtiion of ga68"
 
   # The bottles are built on systems with the CLT installed, and do not work
