@@ -1,6 +1,6 @@
 # Based on https://github.com/pietro/homebrew-core/blob/main/Formula/g/gcc.rb
 class Ga68 < Formula
-  desc "GNU Algol 68 compiler"
+  desc "GNU compiler collection"
   homepage "https://gcc.gnu.org/"
   license "GPL-3.0-or-later" => { with: "GCC-exception-3.1" }
   head "https://gcc.gnu.org/git/gcc.git", branch: "master"
@@ -29,6 +29,9 @@ class Ga68 < Formula
     sha256 arm64_tahoe:  "f504a6cbb5f774d905666a073b77427fddd31443c64e003e69a0fd8967f7f700"
     sha256 x86_64_linux: "1bb02bc8283fc8e0582b348054af87a053d957e85743160ec6638d1f2c95d778"
   end
+
+  conflicts_with "gcc"
+  because: "this formula provides the same frontends as GCC, with the addtiion of ga68"
 
   # The bottles are built on systems with the CLT installed, and do not work
   # out of the box on Xcode-only systems due to an incorrect sysroot.
@@ -65,7 +68,14 @@ class Ga68 < Formula
     # GCC will suffer build errors if forced to use a particular linker.
     ENV.delete "LD"
 
-    languages = %w[algol68]
+    # We avoiding building:
+    #  - Ada and D, which require a pre-existing GCC to bootstrap
+    #  - Cobol, not fully stable yet
+    #  - Go, currently not supported on macOS
+    #  - BRIG
+    #  - Modula-2 on macOS, https://github.com/Homebrew/homebrew-core/pull/221029
+    languages = %w[c c++ objc obj-c++ fortran algol68]
+    languages << "m2" unless OS.mac?
 
     pkgversion = "GNU Algol 68 GCC #{pkg_version}"
 
@@ -132,33 +142,96 @@ class Ga68 < Formula
     end
 
     bin.install_symlink bin/"ga68-#{version_suffix}" => "ga68"
+    bin.install_symlink bin/"gfortran-#{version_suffix}" => "gfortran"
+    bin.install_symlink bin/"gm2-#{version_suffix}" => "gm2"
 
     # Provide a `lib/gcc/xy` directory to align with the versioned GCC formulae.
     # We need to create `lib/gcc/xy` as a directory and not a symlink to avoid `brew link` conflicts.
     (lib/"gcc"/version_suffix).install_symlink (lib/"gcc/current").children
 
-    # Delete man pages and info files to avoid conflict with other GCC formulas.
-    rm_r(man7)
+    # Only the newest brewed gcc should install gfortan libs as we can only have one.
+    lib.install_symlink lib.glob("gcc/current/libgfortran.*") if OS.linux?
+
+    # Rename man7 to avoid conflicts between GCC formulae
+    man7.glob("*.7") { |file| add_suffix file, version_suffix }
+    # Even when we disable building info pages some are still installed.
     rm_r(info)
+  end
+
+  def add_suffix(file, suffix)
+    dir = File.dirname(file)
+    ext = File.extname(file)
+    base = File.basename(file, ext)
+    File.rename file, "#{dir}/#{base}-#{suffix}#{ext}"
   end
 
   post_install_steps do
     configure_gcc_runtime
-
-    # Remove gcc/g++ drivers to avoid conflict with other GCC formulas.
-    remove("*gcc*", base: :bin)
-    remove("*g++*", base: :bin)
-    remove("*gcov*", base: :bin)
-    remove("*lto*", base: :bin)
   end
 
   test do
+    (testpath/"hello-c.c").write <<~C
+      #include <stdio.h>
+      int main()
+      {
+        puts("Hello, world!");
+        return 0;
+      }
+    C
+    system bin/"gcc-#{version_suffix}", "-o", "hello-c", "hello-c.c"
+    assert_equal "Hello, world!\n", shell_output("./hello-c")
+
+    (testpath/"hello-cc.cc").write <<~CPP
+      #include <iostream>
+      struct exception { };
+      int main()
+      {
+        std::cout << "Hello, world!" << std::endl;
+        try { throw exception{}; }
+          catch (exception) { }
+          catch (...) { }
+        return 0;
+      }
+    CPP
+    system bin/"g++-#{version_suffix}", "-o", "hello-cc", "hello-cc.cc"
+    assert_equal "Hello, world!\n", shell_output("./hello-cc")
+
+    (testpath/"test.f90").write <<~FORTRAN
+      integer,parameter::m=10000
+      real::a(m), b(m)
+      real::fact=0.5
+
+      do concurrent (i=1:m)
+        a(i) = a(i) + fact*b(i)
+      end do
+      write(*,"(A)") "Done"
+      end
+    FORTRAN
+    system bin/"gfortran", "-o", "test", "test.f90"
+    assert_equal "Done\n", shell_output("./test")
+
     (testpath/"hello.a68").write <<~ALGOL68
       begin
            puts("Hello, world!'n");
       end
     ALGOL68
+    system bin/"ga68-#{version_suffix}", "-o", "hello-a68-#{version_suffix}", "hello.a68"
+    assert_equal "Hello, world!\n", shell_output("./hello-a68-#{version_suffix}")
     system bin/"ga68", "-o", "hello-a68", "hello.a68"
     assert_equal "Hello, world!\n", shell_output("./hello-a68")
+
+    # Modula-2 is temporarily disabled on macOS
+    return if OS.mac?
+
+    (testpath/"hello.mod").write <<~MODULA2
+      MODULE hello;
+      FROM InOut IMPORT WriteString, WriteLn;
+      BEGIN
+           WriteString("Hello, world!");
+           WriteLn;
+      END hello.
+    MODULA2
+    system bin/"gm2", "-o", "hello-m2", "hello.mod"
+    assert_equal "Hello, world!\n", shell_output("./hello-m2")
   end
 end
