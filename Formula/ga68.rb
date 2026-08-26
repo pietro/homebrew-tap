@@ -30,9 +30,6 @@ class Ga68 < Formula
     sha256 x86_64_linux: "1bb02bc8283fc8e0582b348054af87a053d957e85743160ec6638d1f2c95d778"
   end
 
-  conflicts_with "gcc",
-  because: "this formula provides the same frontends as GCC, with the addtiion of ga68"
-
   # The bottles are built on systems with the CLT installed, and do not work
   # out of the box on Xcode-only systems due to an incorrect sysroot.
   pour_bottle? only_if: :clt_installed
@@ -55,6 +52,9 @@ class Ga68 < Formula
     depends_on "binutils"
     depends_on "zlib-ng-compat"
   end
+
+  conflicts_with "gcc",
+  because: "this formula provides the same frontends as GCC, with the addtiion of ga68"
 
   def version_suffix
     if build.head?
