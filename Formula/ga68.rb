@@ -36,7 +36,7 @@ class Ga68 < Formula
   # out of the box on Xcode-only systems due to an incorrect sysroot.
   pour_bottle? only_if: :clt_installed
 
-  depends_on "bdw-gc"
+  depends_on "bdw-gc-alt"
   depends_on "gmp"
   depends_on "isl"
   depends_on "libmpc"
@@ -57,7 +57,7 @@ class Ga68 < Formula
   end
 
   conflicts_with "gcc",
-  because: "this formula provides the same frontends as GCC, with the addtiion of ga68"
+  because: "this formula provides the same frontends as GCC, with the addition of ga68"
 
   def version_suffix
     if build.head?
@@ -96,6 +96,7 @@ class Ga68 < Formula
       --with-mpc=#{formula_opt_prefix("libmpc")}
       --with-isl=#{formula_opt_prefix("isl")}
       --with-zstd=#{formula_opt_prefix("zstd")}
+      --with-target-bdw-gc=#{formula_opt_prefix("bdw-gc-alt")}
       --with-pkgversion=#{pkgversion}
       --with-bugurl=#{tap.issues_url}
       --with-system-zlib
