@@ -15,6 +15,16 @@ class BdwGcAlt < Formula
     strategy :github_latest
   end
 
+  bottle do
+    root_url "https://github.com/pietro/homebrew-tap/releases/download/bdw-gc-alt-8.2.12"
+    sha256 cellar: :any, arm64_tahoe:   "b01cdfa767c5269812addba4ae62b4da89ac702db6544b80ef599ff2fd341cc1"
+    sha256 cellar: :any, arm64_sequoia: "1275d86f6d0067735d263f7f8733d7a3bf46cb2432855cbb92c9e9e7391e5a7f"
+    sha256 cellar: :any, tahoe:         "f56eaf6e3d17d0c4884a2b85495709fad76ec5dcafac602ebcc27dc5657f4523"
+    sha256 cellar: :any, sequoia:       "3fa40957a91a2e2b917c0a8c4aeb1f9c10589b68c1ccac93080ae1501aada603"
+    sha256 cellar: :any, arm64_linux:   "80b7b1ce6070c914c68b18974eea1b8822b451de0038b00daede8d79d23ffa65"
+    sha256 cellar: :any, x86_64_linux:  "6a42625efa8edba1ae51dd079315b90c09b8affab096acfa3bd90725dfcb7468"
+  end
+
   depends_on "cmake" => :build
 
   conflicts_with "bdw-gc",
