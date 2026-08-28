@@ -26,10 +26,13 @@ class Ga68 < Formula
 
   bottle do
     root_url "https://github.com/pietro/homebrew-tap/releases/download/ga68-16.2.0"
-    rebuild 1
-    sha256 arm64_tahoe:  "54dfd95696442ba1ccf0d312406b51c49166409dd04fb65aa3208ec48bb32665"
-    sha256 tahoe:        "427bdefda9d7adeeaabbd63de7f87f3e1a8714437159c29140763d244d4f99a4"
-    sha256 x86_64_linux: "4bbea1d663a1b5ddb07895064f303b7c7b134a21a203c7cc913f8a4938696d5b"
+    rebuild 2
+    sha256 arm64_tahoe:   "89d383cfe3b5224136071294efdb0169a6664c4383988805c88daf1e52549638"
+    sha256 arm64_sequoia: "e9333df82d7a75e9db50f675ac6a3fcfedf1b4a9dc37b2eeeaef324f64664fa3"
+    sha256 tahoe:         "4e762f77ad04bb9f1a79c81e151490b2baa151010ebf1cd00f9925b8f8b742a0"
+    sha256 sequoia:       "8872e22f0f56bab335f80afa0102108beedadc5e8b2638259a93bb09949b0465"
+    sha256 arm64_linux:   "b5baa1a52acbdab5606c4d1938c39b81deb03cc95c4182a6d350fea4e57cbdcc"
+    sha256 x86_64_linux:  "96efed30a0ce61e8efeb27030568dd58cc56a67dabeca69305ffede00b55c99b"
   end
 
   # The bottles are built on systems with the CLT installed, and do not work
